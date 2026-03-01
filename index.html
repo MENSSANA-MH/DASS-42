@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mens Sana - DASS-42</title>
+    <title>Mens Sana - DASS-42 (LGPD)</title>
     <style>
         * {
             margin: 0;
@@ -33,6 +33,11 @@
             text-align: center;
         }
         
+        h2 {
+            color: #333;
+            margin: 20px 0 10px;
+        }
+        
         .subtitle {
             text-align: center;
             color: #666;
@@ -40,6 +45,73 @@
             font-size: 0.95rem;
             border-bottom: 1px solid #eee;
             padding-bottom: 15px;
+        }
+        
+        /* Caixas informativas */
+        .info-box {
+            background: #e6f7ff;
+            border-left: 4px solid #1890ff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            color: #856404;
+        }
+        
+        .emergency-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            color: #721c24;
+        }
+        
+        .emergency-box strong {
+            color: #491217;
+        }
+        
+        /* Termo de consentimento */
+        .consent-box {
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #ddd;
+        }
+        
+        .consent-item {
+            margin-bottom: 15px;
+        }
+        
+        .consent-item label {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1.4;
+        }
+        
+        .consent-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+        
+        .consent-item small {
+            display: block;
+            margin-left: 28px;
+            color: #666;
+            font-size: 0.85rem;
         }
         
         #loginSection {
@@ -65,24 +137,25 @@
             background: #5a67d8;
         }
         
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        #loginBtn {
+            font-size: 1rem;
+            padding: 10px 20px;
+        }
+        
+        #startBtn {
+            font-size: 1.1rem;
+            padding: 12px 24px;
+            display: block;
+            margin: 20px auto;
+        }
+        
         #pacienteForm {
             margin-top: 20px;
-        }
-        
-        .paciente-info {
-            background: #e6f7ff;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border-left: 4px solid #1890ff;
-        }
-        
-        #nomePaciente {
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
         }
         
         .questao {
@@ -247,12 +320,8 @@
             padding-top: 20px;
         }
         
-        #linkInfo {
-            background: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            word-break: break-all;
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -270,27 +339,52 @@
             <button id="loginBtn" onclick="loginGoogle()">Entrar com Google</button>
         </div>
 
-        <!-- Formulário para paciente (aparece quando há ?psicologo= na URL) -->
-        <div id="pacienteForm" style="display: none;">
-            <div class="paciente-info">
-                <p>Você está respondendo ao questionário encaminhado pelo seu psicólogo.</p>
-                <label for="nomePaciente">Seu nome (para identificação):</label>
-                <input type="text" id="nomePaciente" placeholder="Digite seu nome completo">
+        <!-- Área principal (visível após login) -->
+        <div id="mainArea" style="display: none;">
+            <!-- Mensagens informativas -->
+            <div class="info-box">
+                <strong>📌 Sobre o DASS-42</strong>
+                <p>Este questionário avalia sintomas de <strong>depressão, ansiedade e estresse</strong> com base na <strong>última semana</strong> (incluindo hoje).</p>
+                <p><strong>Recomendação:</strong> Para um acompanhamento adequado, o ideal é responder no máximo <strong>uma vez por semana</strong>. Evite repetir em intervalos menores, pois as sensações podem variar e atrapalhar a interpretação dos resultados.</p>
             </div>
-            <div id="questoes-container"></div>
-            <button type="button" id="calcularBtn" onclick="calcularDASS()">Ver Resultados</button>
-        </div>
 
-        <!-- Resultados (exibido após cálculo) -->
-        <div id="resultados" style="display: none;"></div>
+            <div class="warning-box">
+                <strong>⚠️ Atenção</strong>
+                <p>Esta ferramenta é apenas uma <strong>triagem</strong> e não substitui uma avaliação profissional. Os resultados devem ser interpretados por um psicólogo ou psiquiatra.</p>
+            </div>
 
-        <!-- Painel simples para teste (sem psicólogo por enquanto) -->
-        <div id="painelSimples" style="display: none;">
-            <p>Você está logado como paciente. Responda o questionário acima.</p>
+            <div class="emergency-box">
+                <strong>🆘 Se você estiver passando por um momento de grande sofrimento:</strong>
+                <p>Não hesite em buscar ajuda imediata. Ligue para o <strong>CAPS</strong> mais próximo, vá a um <strong>pronto-socorro</strong> ou entre em contato com o <strong>Centro de Valorização da Vida (CVV)</strong> pelo telefone <strong>188</strong> (24 horas).</p>
+            </div>
+
+            <!-- Termo de consentimento LGPD -->
+            <div class="consent-box">
+                <h3 style="margin-top: 0;">Autorização para coleta de dados</h3>
+                <div class="consent-item">
+                    <label>
+                        <input type="checkbox" id="consentData" value="yes">
+                        <span>Autorizo que minhas respostas (incluindo o resultado do questionário) sejam armazenadas de forma <strong>anônima</strong> para fins de melhoria da ferramenta e pesquisa. Os dados não permitem minha identificação pessoal.</span>
+                    </label>
+                    <small>Se você não autorizar, poderá responder ao questionário normalmente, mas nenhum dado será salvo. (Campo desmarcado por padrão conforme LGPD)</small>
+                </div>
+            </div>
+
+            <!-- Botão para iniciar o questionário (só aparece após login) -->
+            <button id="startBtn" onclick="iniciarQuestionario()">Iniciar Questionário</button>
+
+            <!-- Formulário do questionário (inicialmente oculto) -->
+            <div id="pacienteForm" style="display: none;">
+                <div id="questoes-container"></div>
+                <button type="button" id="calcularBtn" onclick="calcularDASS()">Ver Resultados</button>
+            </div>
+
+            <!-- Área de resultados -->
+            <div id="resultados" style="display: none;"></div>
         </div>
 
         <div class="aviso-legal">
-            <p>⚠️ Ferramenta de triagem – não substitui avaliação profissional.</p>
+            <p>⚠️ Ferramenta de triagem – não substitui avaliação profissional. Ao continuar, você confirma que leu e compreendeu as informações acima.</p>
         </div>
     </div>
 
@@ -300,7 +394,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // Configuração do Firebase (novo projeto)
+        // Configuração do Firebase (SUBSTITUA PELOS DADOS DO SEU PROJETO)
         const firebaseConfig = {
             apiKey: "AIzaSyDUOiY5wYlQiZiJwe7yodzw4kSjWGPw2yY",
             authDomain: "dass-42-1041d.firebaseapp.com",
@@ -315,10 +409,6 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-
-        // Verificar se há parâmetro ?psicologo= na URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const psicologoIdFromUrl = urlParams.get('psicologo');
 
         // Lista das 42 questões
         const questoes = [
@@ -398,7 +488,7 @@
             ]
         };
 
-        // Subescalas (aproximadas)
+        // Subescalas (aproximadas, baseadas na literatura)
         const subescalas = {
             depressao: {
                 disforia: [12,15,25,30],
@@ -420,22 +510,8 @@
             }
         };
 
-        // Função para renderizar questões (chamada apenas quando necessário)
-        function renderizarQuestoes() {
-            const container = document.getElementById('questoes-container');
-            if (container.children.length > 0) return; // já renderizado
-            questoes.forEach((q, idx) => {
-                const divQuestao = document.createElement('div');
-                divQuestao.className = 'questao';
-                divQuestao.innerHTML = `<p>${q}</p><div class="opcoes">`;
-                for (let v = 0; v <= 3; v++) {
-                    const texto = ['0 - Não se aplicou', '1 - Em algum grau', '2 - Consideravelmente', '3 - Muitíssimo'][v];
-                    divQuestao.innerHTML += `<div class="opcao"><label><input type="radio" name="q${idx}" value="${v}" required> ${texto}</label></div>`;
-                }
-                divQuestao.innerHTML += '</div>';
-                container.appendChild(divQuestao);
-            });
-        }
+        // Variável de controle para saber se o questionário já foi renderizado
+        let questionarioRenderizado = false;
 
         // Funções de autenticação
         function loginGoogle() {
@@ -450,34 +526,59 @@
         // Monitorar estado de autenticação
         auth.onAuthStateChanged(user => {
             if (user) {
+                // Usuário logado: esconde botão de login, mostra área principal
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('userInfo').style.display = 'block';
                 document.getElementById('userName').textContent = user.displayName || user.email;
-
-                // Se tem psicologo na URL, assume que é paciente
-                if (psicologoIdFromUrl) {
-                    document.getElementById('pacienteForm').style.display = 'block';
-                    renderizarQuestoes();
-                } else {
-                    // Se não tem link, por enquanto só mostra mensagem (depois pode ser painel do psicólogo)
-                    document.getElementById('painelSimples').style.display = 'block';
-                    document.getElementById('pacienteForm').style.display = 'none';
-                }
+                document.getElementById('mainArea').style.display = 'block';
             } else {
+                // Usuário não logado: mostra botão de login, esconde área principal
                 document.getElementById('loginBtn').style.display = 'block';
                 document.getElementById('userInfo').style.display = 'none';
+                document.getElementById('mainArea').style.display = 'none';
                 document.getElementById('pacienteForm').style.display = 'none';
-                document.getElementById('painelSimples').style.display = 'none';
                 document.getElementById('resultados').style.display = 'none';
-                
-                // Se tem psicologo na URL, mostra formulário mesmo sem login? Não, precisa logar.
-                if (psicologoIdFromUrl) {
-                    document.getElementById('loginBtn').textContent = 'Faça login para responder';
-                } else {
-                    document.getElementById('loginBtn').textContent = 'Entrar com Google';
-                }
+                questionarioRenderizado = false;
             }
         });
+
+        // Iniciar questionário (chamado ao clicar no botão)
+        function iniciarQuestionario() {
+            // Esconde o botão iniciar e mostra o formulário
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('pacienteForm').style.display = 'block';
+            if (!questionarioRenderizado) {
+                renderizarQuestoes();
+                questionarioRenderizado = true;
+            }
+        }
+
+        // Renderizar as questões no HTML
+        function renderizarQuestoes() {
+            const container = document.getElementById('questoes-container');
+            container.innerHTML = ''; // Limpa antes de renderizar
+            questoes.forEach((q, idx) => {
+                const divQuestao = document.createElement('div');
+                divQuestao.className = 'questao';
+                const p = document.createElement('p');
+                p.textContent = q;
+                divQuestao.appendChild(p);
+                
+                const divOpcoes = document.createElement('div');
+                divOpcoes.className = 'opcoes';
+                
+                for (let v = 0; v <= 3; v++) {
+                    const texto = ['0 - Não se aplicou', '1 - Em algum grau', '2 - Consideravelmente', '3 - Muitíssimo'][v];
+                    const divOpcao = document.createElement('div');
+                    divOpcao.className = 'opcao';
+                    divOpcao.innerHTML = `<label><input type="radio" name="q${idx}" value="${v}" required> ${texto}</label>`;
+                    divOpcoes.appendChild(divOpcao);
+                }
+                
+                divQuestao.appendChild(divOpcoes);
+                container.appendChild(divQuestao);
+            });
+        }
 
         // Função para classificar escore
         function classificarEscore(escore, tipo) {
@@ -542,7 +643,7 @@
             // Calcular subescalas
             const subResultados = calcularSubescalas(respostas);
 
-            // Exibir resultados
+            // Gerar HTML das subescalas
             let htmlSub = '';
             for (let esc in subResultados) {
                 htmlSub += `<h3>${esc.charAt(0).toUpperCase() + esc.slice(1)}</h3>`;
@@ -554,6 +655,7 @@
                 htmlSub += '</table>';
             }
 
+            // Exibir resultados
             document.getElementById('resultados').style.display = 'block';
             document.getElementById('resultados').innerHTML = `
                 <div class="resultados">
@@ -569,57 +671,50 @@
                 </div>
             `;
 
-            // ===== SALVAR NO FIRESTORE (dados anônimos) =====
+            // Verificar se o usuário autorizou a coleta de dados
+            const consentCheckbox = document.getElementById('consentData');
             const user = auth.currentUser;
+
             if (!user) {
-                alert('Erro: usuário não autenticado.');
+                console.log('Usuário não logado – não é possível salvar.');
                 return;
             }
 
-            // Se não veio da URL com psicologo, não salva (ou salva como paciente genérico)
-            if (!psicologoIdFromUrl) {
-                console.log('Modo de teste: sem psicólogo, não salvando.');
-                return;
-            }
+            if (consentCheckbox.checked) {
+                // Usuário autorizou – salvar dados anônimos
+                try {
+                    // Gerar ID anônimo (hash simples do UID)
+                    const anonPacienteId = btoa(user.uid).replace(/=/g, ''); // base64 sem padding
 
-            // Gerar ID anônimo (hash simples do UID)
-            const anonPacienteId = btoa(user.uid).replace(/=/g, ''); // base64 sem padding
+                    const dadosAnonimos = {
+                        anonPacienteId: anonPacienteId,
+                        data: firebase.firestore.FieldValue.serverTimestamp(),
+                        respostas: respostas,
+                        escores: {
+                            depressao: { bruto: dep, classificacao: classDep },
+                            ansiedade: { bruto: ans, classificacao: classAns },
+                            estresse: { bruto: est, classificacao: classEst }
+                        },
+                        subescalas: subResultados,
+                        escoresNormalizados: {
+                            depressao: (dep / 42) * 10,
+                            ansiedade: (ans / 42) * 10,
+                            estresse: (est / 42) * 10
+                        }
+                    };
 
-            const dadosAnonimos = {
-                anonPacienteId: anonPacienteId,
-                psicologoId: psicologoIdFromUrl,
-                data: firebase.firestore.FieldValue.serverTimestamp(),
-                respostas: respostas,
-                escores: {
-                    depressao: { bruto: dep, classificacao: classDep },
-                    ansiedade: { bruto: ans, classificacao: classAns },
-                    estresse: { bruto: est, classificacao: classEst }
-                },
-                subescalas: subResultados,
-                // Opcional: escores normalizados principais
-                escoresNormalizados: {
-                    depressao: (dep / 42) * 10,
-                    ansiedade: (ans / 42) * 10,
-                    estresse: (est / 42) * 10
+                    await db.collection('respostas_anonimas').add(dadosAnonimos);
+                    console.log('Dados salvos com sucesso!');
+                } catch (error) {
+                    console.error('Erro ao salvar dados:', error);
                 }
-            };
-
-            try {
-                await db.collection('respostas_anonimas').add(dadosAnonimos);
-                console.log('Dados salvos com sucesso!');
-            } catch (error) {
-                console.error('Erro ao salvar:', error);
-                alert('Erro ao salvar os dados. Verifique o console.');
+            } else {
+                console.log('Usuário não autorizou a coleta – dados não foram salvos.');
             }
+
+            // Rolagem suave até os resultados
+            document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
         }
-
-        // Inicialização: se houver psicologo na URL, já prepara
-        window.onload = function() {
-            if (psicologoIdFromUrl) {
-                // Se já estiver logado, a auth mudará e mostrará o form
-                // Se não, o botão de login já estará visível
-            }
-        };
     </script>
 </body>
 </html>
