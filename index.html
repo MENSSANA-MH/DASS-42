@@ -42,7 +42,6 @@
             padding-bottom: 15px;
         }
         
-        /* Caixas informativas */
         .info-box {
             background: #e6f7ff;
             border-left: 4px solid #1890ff;
@@ -73,7 +72,6 @@
             color: #491217;
         }
         
-        /* Termo de consentimento */
         .consent-box {
             background: #f0f0f0;
             padding: 20px;
@@ -259,9 +257,25 @@
             display: inline-block;
         }
         
+        .normalizado {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
         h3 {
             margin: 20px 0 10px;
             color: #333;
+        }
+        
+        .explicacao-normalizado {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            color: #555;
+            border-left: 3px solid #667eea;
         }
         
         table {
@@ -380,13 +394,14 @@
         </div>
     </div>
 
-    <!-- Firebase SDK (versão compat) -->
+    <!-- Firebase SDK (versão compat) com Analytics -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics-compat.js"></script>
 
     <script>
-        // Configuração do Firebase (SUBSTITUA PELOS DADOS DO SEU PROJETO)
+        // Configuração do Firebase (com measurementId)
         const firebaseConfig = {
             apiKey: "AIzaSyDUOiY5wYlQiZiJwe7yodzw4kSjWGPw2yY",
             authDomain: "dass-42-1041d.firebaseapp.com",
@@ -401,18 +416,19 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        const analytics = firebase.analytics();
 
-        // Lista das 42 questões
+        // ========== LISTA DAS 42 QUESTÕES VALIDADAS (Vignola & Tucci, 2014) ==========
         const questoes = [
-            "1. Tive dificuldade em me acalmar",
+            "1. Não consegui sentir nenhum sentimento positivo",
             "2. Senti minha boca seca",
             "3. Não consegui experimentar nenhum sentimento positivo",
             "4. Tive dificuldade em respirar (ex: respiração muito rápida, falta de ar sem esforço físico)",
-            "5. Tive dificuldade em ter iniciativa para fazer as coisas",
+            "5. Não consegui ter entusiasmo por nada",
             "6. Tive tendência a reagir exageradamente às situações",
             "7. Senti tremores (ex: nas mãos)",
             "8. Senti que estava nervoso",
-            "9. Preocupei-me com situações em que poderia entrar em pânico e fazer papel de bobo",
+            "9. Fiquei preocupado com situações em que poderia entrar em pânico",
             "10. Senti que não tinha nada a esperar do futuro",
             "11. Senti-me agitado",
             "12. Senti dificuldade em relaxar",
@@ -454,6 +470,9 @@
             ansiedade: [1,3,6,8,14,18,19,22,24,27,29,35,39,40],
             estresse:  [0,5,7,10,11,13,17,21,26,28,31,32,34,38]
         };
+
+        // Valores máximos para cada escala (14 itens * 3)
+        const MAX_POR_ESCALA = 42;
 
         // Tabela de classificação
         const classificacao = {
@@ -518,13 +537,12 @@
         // Monitorar estado de autenticação
         auth.onAuthStateChanged(user => {
             if (user) {
-                // Usuário logado: esconde botão de login, mostra área principal
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('userInfo').style.display = 'block';
                 document.getElementById('userName').textContent = user.displayName || user.email;
                 document.getElementById('mainArea').style.display = 'block';
+                analytics.logEvent('login', { method: 'Google' });
             } else {
-                // Usuário não logado: mostra botão de login, esconde área principal
                 document.getElementById('loginBtn').style.display = 'block';
                 document.getElementById('userInfo').style.display = 'none';
                 document.getElementById('mainArea').style.display = 'none';
@@ -534,21 +552,21 @@
             }
         });
 
-        // Iniciar questionário (chamado ao clicar no botão)
+        // Iniciar questionário
         function iniciarQuestionario() {
-            // Esconde o botão iniciar e mostra o formulário
             document.getElementById('startBtn').style.display = 'none';
             document.getElementById('pacienteForm').style.display = 'block';
             if (!questionarioRenderizado) {
                 renderizarQuestoes();
                 questionarioRenderizado = true;
             }
+            analytics.logEvent('questionario_iniciado');
         }
 
-        // Renderizar as questões no HTML
+        // Renderizar as questões no HTML (com as âncoras Likert corretas)
         function renderizarQuestoes() {
             const container = document.getElementById('questoes-container');
-            container.innerHTML = ''; // Limpa antes de renderizar
+            container.innerHTML = '';
             questoes.forEach((q, idx) => {
                 const divQuestao = document.createElement('div');
                 divQuestao.className = 'questao';
@@ -560,7 +578,12 @@
                 divOpcoes.className = 'opcoes';
                 
                 for (let v = 0; v <= 3; v++) {
-                    const texto = ['0 - Não se aplicou', '1 - Em algum grau', '2 - Consideravelmente', '3 - Muitíssimo'][v];
+                    const texto = [
+                        '0 - Não aconteceu comigo nessa semana',
+                        '1 - Aconteceu comigo algumas vezes na semana',
+                        '2 - Aconteceu comigo em boa parte da semana',
+                        '3 - Aconteceu comigo na maior parte do tempo da semana'
+                    ][v];
                     const divOpcao = document.createElement('div');
                     divOpcao.className = 'opcao';
                     divOpcao.innerHTML = `<label><input type="radio" name="q${idx}" value="${v}" required> ${texto}</label>`;
@@ -635,6 +658,11 @@
             // Calcular subescalas
             const subResultados = calcularSubescalas(respostas);
 
+            // Calcular normalizados para as escalas principais
+            const normDep = (dep / MAX_POR_ESCALA * 10).toFixed(1);
+            const normAns = (ans / MAX_POR_ESCALA * 10).toFixed(1);
+            const normEst = (est / MAX_POR_ESCALA * 10).toFixed(1);
+
             // Gerar HTML das subescalas
             let htmlSub = '';
             for (let esc in subResultados) {
@@ -647,17 +675,40 @@
                 htmlSub += '</table>';
             }
 
-            // Montar HTML dos resultados (incluindo a mensagem de emergência e o aviso de triagem)
+            // Montar HTML dos resultados
             const resultadosHTML = `
                 <div class="resultados">
                     <h2>Resultados</h2>
                     <div class="cards">
-                        <div class="card-resultado"><h3>Depressão</h3><div class="escore">${dep}</div><div class="classificacao">${classDep}</div></div>
-                        <div class="card-resultado"><h3>Ansiedade</h3><div class="escore">${ans}</div><div class="classificacao">${classAns}</div></div>
-                        <div class="card-resultado"><h3>Estresse</h3><div class="escore">${est}</div><div class="classificacao">${classEst}</div></div>
+                        <div class="card-resultado">
+                            <h3>Depressão</h3>
+                            <div class="escore">${dep}</div>
+                            <div class="classificacao">${classDep}</div>
+                            <div class="normalizado">${dep}/${MAX_POR_ESCALA} · ${normDep}/10</div>
+                        </div>
+                        <div class="card-resultado">
+                            <h3>Ansiedade</h3>
+                            <div class="escore">${ans}</div>
+                            <div class="classificacao">${classAns}</div>
+                            <div class="normalizado">${ans}/${MAX_POR_ESCALA} · ${normAns}/10</div>
+                        </div>
+                        <div class="card-resultado">
+                            <h3>Estresse</h3>
+                            <div class="escore">${est}</div>
+                            <div class="classificacao">${classEst}</div>
+                            <div class="normalizado">${est}/${MAX_POR_ESCALA} · ${normEst}/10</div>
+                        </div>
                     </div>
+
+                    <div class="explicacao-normalizado">
+                        <strong>📊 Entenda os valores normalizados (0–10):</strong> Esta escala ajuda a comparar diferentes dimensões de forma intuitiva. 
+                        Quanto mais próximo de 10, maior a intensidade dos sintomas na última semana. 
+                        Por exemplo, uma nota 5 indica que você está na metade do máximo possível.
+                    </div>
+
                     <h3>Subescalas</h3>
                     ${htmlSub}
+
                     <div class="emergency-box" style="margin-top: 30px;">
                         <strong>🆘 Se este resultado gerou grande sofrimento:</strong>
                         <p>Não hesite em buscar ajuda imediata. Ligue para o <strong>CAPS</strong> mais próximo, vá a um <strong>pronto-socorro</strong> ou entre em contato com o <strong>Centro de Valorização da Vida (CVV)</strong> pelo telefone <strong>188</strong> (24 horas).</p>
@@ -681,11 +732,15 @@
                 return;
             }
 
+            analytics.logEvent('questionario_concluido', {
+                depressao: dep,
+                ansiedade: ans,
+                estresse: est
+            });
+
             if (consentCheckbox.checked) {
-                // Usuário autorizou – salvar dados anônimos
                 try {
-                    // Gerar ID anônimo (hash simples do UID)
-                    const anonPacienteId = btoa(user.uid).replace(/=/g, ''); // base64 sem padding
+                    const anonPacienteId = btoa(user.uid).replace(/=/g, '');
 
                     const dadosAnonimos = {
                         anonPacienteId: anonPacienteId,
@@ -698,9 +753,9 @@
                         },
                         subescalas: subResultados,
                         escoresNormalizados: {
-                            depressao: (dep / 42) * 10,
-                            ansiedade: (ans / 42) * 10,
-                            estresse: (est / 42) * 10
+                            depressao: parseFloat(normDep),
+                            ansiedade: parseFloat(normAns),
+                            estresse: parseFloat(normEst)
                         }
                     };
 
@@ -713,7 +768,6 @@
                 console.log('Usuário não autorizou a coleta – dados não foram salvos.');
             }
 
-            // Rolagem suave até os resultados
             document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
         }
     </script>
