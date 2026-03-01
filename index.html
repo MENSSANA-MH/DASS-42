@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mens Sana - DASS-42 (LGPD)</title>
+    <title>Mens Sana - DASS-42</title>
     <style>
         * {
             margin: 0;
@@ -31,11 +31,6 @@
             color: #333;
             margin-bottom: 10px;
             text-align: center;
-        }
-        
-        h2 {
-            color: #333;
-            margin: 20px 0 10px;
         }
         
         .subtitle {
@@ -137,11 +132,6 @@
             background: #5a67d8;
         }
         
-        button:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
-        }
-        
         #loginBtn {
             font-size: 1rem;
             padding: 10px 20px;
@@ -156,6 +146,7 @@
         
         #pacienteForm {
             margin-top: 20px;
+            display: none;
         }
         
         .questao {
@@ -313,15 +304,15 @@
         
         .aviso-legal {
             margin-top: 30px;
-            font-size: 0.8rem;
-            color: #999;
+            font-size: 0.85rem;
+            color: #666;
             text-align: center;
             border-top: 1px solid #eee;
             padding-top: 20px;
         }
         
-        .hidden {
-            display: none;
+        .aviso-legal strong {
+            color: #333;
         }
     </style>
 </head>
@@ -341,7 +332,7 @@
 
         <!-- Área principal (visível após login) -->
         <div id="mainArea" style="display: none;">
-            <!-- Mensagens informativas -->
+            <!-- Mensagens iniciais -->
             <div class="info-box">
                 <strong>📌 Sobre o DASS-42</strong>
                 <p>Este questionário avalia sintomas de <strong>depressão, ansiedade e estresse</strong> com base na <strong>última semana</strong> (incluindo hoje).</p>
@@ -350,7 +341,7 @@
 
             <div class="warning-box">
                 <strong>⚠️ Atenção</strong>
-                <p>Esta ferramenta é apenas uma <strong>triagem</strong> e não substitui uma avaliação profissional. Os resultados devem ser interpretados por um psicólogo ou psiquiatra.</p>
+                <p>Esta é uma ferramenta apenas para <strong>triagem</strong> e não substitui a avaliação de um profissional. Os resultados devem ser interpretados por um psicólogo ou psiquiatra.</p>
             </div>
 
             <div class="emergency-box">
@@ -370,7 +361,7 @@
                 </div>
             </div>
 
-            <!-- Botão para iniciar o questionário (só aparece após login) -->
+            <!-- Botão para iniciar o questionário -->
             <button id="startBtn" onclick="iniciarQuestionario()">Iniciar Questionário</button>
 
             <!-- Formulário do questionário (inicialmente oculto) -->
@@ -379,12 +370,13 @@
                 <button type="button" id="calcularBtn" onclick="calcularDASS()">Ver Resultados</button>
             </div>
 
-            <!-- Área de resultados -->
+            <!-- Área de resultados (inicialmente oculta) -->
             <div id="resultados" style="display: none;"></div>
         </div>
 
+        <!-- Aviso legal no rodapé -->
         <div class="aviso-legal">
-            <p>⚠️ Ferramenta de triagem – não substitui avaliação profissional. Ao continuar, você confirma que leu e compreendeu as informações acima.</p>
+            <p><strong>Esta é uma ferramenta apenas para triagem e não substitui a avaliação de um profissional.</strong> Ao continuar, você confirma que leu e compreendeu as informações acima.</p>
         </div>
     </div>
 
@@ -655,9 +647,8 @@
                 htmlSub += '</table>';
             }
 
-            // Exibir resultados
-            document.getElementById('resultados').style.display = 'block';
-            document.getElementById('resultados').innerHTML = `
+            // Montar HTML dos resultados (incluindo a mensagem de emergência e o aviso de triagem)
+            const resultadosHTML = `
                 <div class="resultados">
                     <h2>Resultados</h2>
                     <div class="cards">
@@ -667,9 +658,19 @@
                     </div>
                     <h3>Subescalas</h3>
                     ${htmlSub}
-                    <div class="aviso">⚠️ Apenas triagem – consulte um profissional.</div>
+                    <div class="emergency-box" style="margin-top: 30px;">
+                        <strong>🆘 Se este resultado gerou grande sofrimento:</strong>
+                        <p>Não hesite em buscar ajuda imediata. Ligue para o <strong>CAPS</strong> mais próximo, vá a um <strong>pronto-socorro</strong> ou entre em contato com o <strong>Centro de Valorização da Vida (CVV)</strong> pelo telefone <strong>188</strong> (24 horas).</p>
+                    </div>
+                    <div class="aviso">
+                        <strong>⚠️ Esta é uma ferramenta apenas para triagem e não substitui a avaliação de um profissional.</strong> Consulte um psicólogo ou psiquiatra para uma avaliação completa.
+                    </div>
                 </div>
             `;
+
+            // Exibir resultados
+            document.getElementById('resultados').style.display = 'block';
+            document.getElementById('resultados').innerHTML = resultadosHTML;
 
             // Verificar se o usuário autorizou a coleta de dados
             const consentCheckbox = document.getElementById('consentData');
