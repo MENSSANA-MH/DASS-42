@@ -11,11 +11,13 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+        
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
+        
         .container {
             max-width: 900px;
             margin: 0 auto;
@@ -24,24 +26,31 @@
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
+        
         h1 {
             color: #333;
+            margin-bottom: 10px;
             text-align: center;
         }
+        
         .subtitle {
             text-align: center;
             color: #666;
             margin-bottom: 30px;
+            font-size: 0.95rem;
             border-bottom: 1px solid #eee;
             padding-bottom: 15px;
         }
+        
         #loginSection {
             text-align: right;
             margin-bottom: 20px;
         }
+        
         #userInfo {
             display: none;
         }
+        
         button {
             background: #667eea;
             color: white;
@@ -51,19 +60,31 @@
             cursor: pointer;
             font-size: 0.9rem;
         }
+        
         button:hover {
             background: #5a67d8;
         }
-        #dassForm {
-            display: none;
+        
+        #pacienteForm {
+            margin-top: 20px;
         }
+        
         .paciente-info {
             background: #e6f7ff;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 8px;
             margin-bottom: 20px;
             border-left: 4px solid #1890ff;
         }
+        
+        #nomePaciente {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
         .questao {
             margin-bottom: 25px;
             padding: 15px;
@@ -71,20 +92,24 @@
             border-radius: 8px;
             border-left: 4px solid #667eea;
         }
+        
         .questao p {
             font-weight: 600;
             margin-bottom: 10px;
             color: #333;
         }
+        
         .opcoes {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
+        
         .opcao {
             flex: 1;
             min-width: 120px;
         }
+        
         .opcao label {
             display: flex;
             align-items: center;
@@ -97,13 +122,16 @@
             transition: all 0.2s;
             font-size: 0.9rem;
         }
+        
         .opcao input[type="radio"] {
             accent-color: #667eea;
         }
+        
         .opcao label:hover {
             background: #f0f0f0;
             border-color: #667eea;
         }
+        
         #calcularBtn {
             display: block;
             width: 100%;
@@ -117,9 +145,11 @@
             cursor: pointer;
             margin: 30px 0 20px;
         }
+        
         #calcularBtn:hover {
             background: #5a67d8;
         }
+        
         .resultados {
             background: #f0f4ff;
             border-radius: 10px;
@@ -127,17 +157,14 @@
             margin-top: 20px;
             border: 2px solid #667eea;
         }
-        .resultados h2 {
-            color: #333;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+        
         .cards {
             display: flex;
             flex-wrap: wrap;
             gap: 15px;
             margin-bottom: 30px;
         }
+        
         .card-resultado {
             flex: 1 1 180px;
             padding: 15px;
@@ -146,17 +173,20 @@
             text-align: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
+        
         .card-resultado h3 {
             color: #667eea;
             margin-bottom: 10px;
             font-size: 1.1rem;
         }
+        
         .escore {
             font-size: 2rem;
             font-weight: 700;
             color: #333;
             margin: 10px 0;
         }
+        
         .classificacao {
             font-weight: 600;
             padding: 5px 10px;
@@ -164,10 +194,12 @@
             background: #f0f0f0;
             display: inline-block;
         }
+        
         h3 {
             margin: 20px 0 10px;
             color: #333;
         }
+        
         table {
             width: 100%;
             border-collapse: collapse;
@@ -177,6 +209,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
+        
         th {
             background: #667eea;
             color: white;
@@ -184,13 +217,16 @@
             font-weight: 600;
             text-align: left;
         }
+        
         td {
             padding: 8px 10px;
             border-bottom: 1px solid #eee;
         }
+        
         tr:last-child td {
             border-bottom: none;
         }
+        
         .aviso {
             margin-top: 20px;
             padding: 15px;
@@ -201,6 +237,7 @@
             font-size: 0.9rem;
             text-align: center;
         }
+        
         .aviso-legal {
             margin-top: 30px;
             font-size: 0.8rem;
@@ -208,6 +245,14 @@
             text-align: center;
             border-top: 1px solid #eee;
             padding-top: 20px;
+        }
+        
+        #linkInfo {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            word-break: break-all;
         }
     </style>
 </head>
@@ -225,45 +270,57 @@
             <button id="loginBtn" onclick="loginGoogle()">Entrar com Google</button>
         </div>
 
-        <!-- Formulário do questionário (inicialmente oculto) -->
-        <form id="dassForm">
+        <!-- Formulário para paciente (aparece quando há ?psicologo= na URL) -->
+        <div id="pacienteForm" style="display: none;">
             <div class="paciente-info">
-                <p>Você está respondendo anonimamente. Seus dados serão armazenados com um código interno que permite acompanhamento longitudinal, mas sem identificação pessoal.</p>
+                <p>Você está respondendo ao questionário encaminhado pelo seu psicólogo.</p>
+                <label for="nomePaciente">Seu nome (para identificação):</label>
+                <input type="text" id="nomePaciente" placeholder="Digite seu nome completo">
             </div>
             <div id="questoes-container"></div>
             <button type="button" id="calcularBtn" onclick="calcularDASS()">Ver Resultados</button>
-        </form>
+        </div>
 
-        <!-- Área de resultados (inicialmente oculta) -->
+        <!-- Resultados (exibido após cálculo) -->
         <div id="resultados" style="display: none;"></div>
 
+        <!-- Painel simples para teste (sem psicólogo por enquanto) -->
+        <div id="painelSimples" style="display: none;">
+            <p>Você está logado como paciente. Responda o questionário acima.</p>
+        </div>
+
         <div class="aviso-legal">
-            <p>⚠️ Esta ferramenta é apenas para fins de triagem e não substitui uma avaliação profissional.</p>
-            <p>© Baseado no DASS-42 (Lovibond & Lovibond, 1995).</p>
+            <p>⚠️ Ferramenta de triagem – não substitui avaliação profissional.</p>
         </div>
     </div>
 
-    <!-- Firebase SDK (compat) – COLE AQUI SUAS CREDENCIAIS DO NOVO PROJETO -->
+    <!-- Firebase SDK (versão compat) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <script>
-        // ========== CONFIGURAÇÃO DO FIREBASE ==========
-        // 🔁 Substitua pelos dados do seu novo projeto Firebase
+        // Configuração do Firebase (novo projeto)
         const firebaseConfig = {
-            apiKey: "AIzaSy...",           // substitua
-            authDomain: "seu-projeto.firebaseapp.com",
-            projectId: "seu-projeto",
-            storageBucket: "seu-projeto.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:..."
+            apiKey: "AIzaSyDUOiY5wYlQiZiJwe7yodzw4kSjWGPw2yY",
+            authDomain: "dass-42-1041d.firebaseapp.com",
+            projectId: "dass-42-1041d",
+            storageBucket: "dass-42-1041d.firebasestorage.app",
+            messagingSenderId: "39715550448",
+            appId: "1:39715550448:web:34c0aeeb0a52d903aa7e35",
+            measurementId: "G-D2J37HNV2W"
         };
+
+        // Inicializa Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // ========== LISTA DAS 42 QUESTÕES ==========
+        // Verificar se há parâmetro ?psicologo= na URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const psicologoIdFromUrl = urlParams.get('psicologo');
+
+        // Lista das 42 questões
         const questoes = [
             "1. Tive dificuldade em me acalmar",
             "2. Senti minha boca seca",
@@ -309,14 +366,14 @@
             "42. Senti que era difícil continuar"
         ];
 
-        // Mapeamento dos itens para as escalas principais (índices 0‑based)
+        // Mapeamento dos itens por escala principal (índices 0-based)
         const escalasPrincipais = {
-            depressao: [2, 4, 9, 12, 15, 16, 20, 23, 25, 30, 33, 36, 37, 41],
-            ansiedade: [1, 3, 6, 8, 14, 18, 19, 22, 24, 27, 29, 35, 39, 40],
-            estresse:  [0, 5, 7, 10, 11, 13, 17, 21, 26, 28, 31, 32, 34, 38]
+            depressao: [2,4,9,12,15,16,20,23,25,30,33,36,37,41],
+            ansiedade: [1,3,6,8,14,18,19,22,24,27,29,35,39,40],
+            estresse:  [0,5,7,10,11,13,17,21,26,28,31,32,34,38]
         };
 
-        // Pontos de corte para classificação
+        // Tabela de classificação
         const classificacao = {
             depressao: [
                 { max: 9, label: 'Normal' },
@@ -341,88 +398,90 @@
             ]
         };
 
-        // Subescalas (aproximações baseadas na literatura)
+        // Subescalas (aproximadas)
         const subescalas = {
             depressao: {
-                disforia: [12, 15, 25, 30],
-                desesperanca: [9, 20, 37],
-                desvalorizacao: [2, 4, 33],
-                autodepreciacao: [16, 36, 41],
-                faltaInteresse: [23, 40]
+                disforia: [12,15,25,30],
+                desesperanca: [9,20,37],
+                desvalorizacao: [2,4,33],
+                autodepreciacao: [16,36,41],
+                faltaInteresse: [23,40]
             },
             ansiedade: {
-                excitacaoAutonomica: [1, 3, 6, 8, 14, 18, 19, 22, 24, 27, 29, 35, 39, 40],
+                excitacaoAutonomica: [1,3,6,8,14,18,19,22,24,27,29,35,39,40],
                 muscular: [6],
-                situacional: [8, 27, 29],
-                subjetiva: [14, 18, 19, 35, 39, 40]
+                situacional: [8,27,29],
+                subjetiva: [14,18,19,35,39,40]
             },
             estresse: {
-                dificuldadeRelaxar: [11, 21, 26, 28, 31, 32],
-                agitado: [5, 7, 10, 13, 17, 34, 38],
-                irritavel: [0, 12, 17, 31, 34, 38]
+                dificuldadeRelaxar: [11,21,26,28,31,32],
+                agitado: [5,7,10,13,17,34,38],
+                irritavel: [0,12,17,31,34,38]
             }
         };
 
-        // ========== RENDERIZAÇÃO DAS QUESTÕES ==========
-        window.onload = function() {
+        // Função para renderizar questões (chamada apenas quando necessário)
+        function renderizarQuestoes() {
             const container = document.getElementById('questoes-container');
+            if (container.children.length > 0) return; // já renderizado
             questoes.forEach((q, idx) => {
                 const divQuestao = document.createElement('div');
                 divQuestao.className = 'questao';
-                const p = document.createElement('p');
-                p.textContent = q;
-                divQuestao.appendChild(p);
-
-                const divOpcoes = document.createElement('div');
-                divOpcoes.className = 'opcoes';
-                [0, 1, 2, 3].forEach(valor => {
-                    const divOpcao = document.createElement('div');
-                    divOpcao.className = 'opcao';
-                    const label = document.createElement('label');
-                    const radio = document.createElement('input');
-                    radio.type = 'radio';
-                    radio.name = `q${idx}`;
-                    radio.value = valor;
-                    radio.required = true;
-                    const texto = ['0 - Não se aplicou', '1 - Em algum grau', '2 - Consideravelmente', '3 - Muitíssimo'][valor];
-                    label.appendChild(radio);
-                    label.appendChild(document.createTextNode(texto));
-                    divOpcao.appendChild(label);
-                    divOpcoes.appendChild(divOpcao);
-                });
-                divQuestao.appendChild(divOpcoes);
+                divQuestao.innerHTML = `<p>${q}</p><div class="opcoes">`;
+                for (let v = 0; v <= 3; v++) {
+                    const texto = ['0 - Não se aplicou', '1 - Em algum grau', '2 - Consideravelmente', '3 - Muitíssimo'][v];
+                    divQuestao.innerHTML += `<div class="opcao"><label><input type="radio" name="q${idx}" value="${v}" required> ${texto}</label></div>`;
+                }
+                divQuestao.innerHTML += '</div>';
                 container.appendChild(divQuestao);
             });
-        };
+        }
 
-        // ========== FUNÇÕES DE AUTENTICAÇÃO ==========
+        // Funções de autenticação
         function loginGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(error => alert('Erro: ' + error.message));
+            auth.signInWithPopup(provider).catch(error => alert('Erro no login: ' + error.message));
         }
 
         function logout() {
             auth.signOut().then(() => window.location.reload());
         }
 
+        // Monitorar estado de autenticação
         auth.onAuthStateChanged(user => {
             if (user) {
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('userInfo').style.display = 'block';
                 document.getElementById('userName').textContent = user.displayName || user.email;
-                document.getElementById('dassForm').style.display = 'block';
+
+                // Se tem psicologo na URL, assume que é paciente
+                if (psicologoIdFromUrl) {
+                    document.getElementById('pacienteForm').style.display = 'block';
+                    renderizarQuestoes();
+                } else {
+                    // Se não tem link, por enquanto só mostra mensagem (depois pode ser painel do psicólogo)
+                    document.getElementById('painelSimples').style.display = 'block';
+                    document.getElementById('pacienteForm').style.display = 'none';
+                }
             } else {
                 document.getElementById('loginBtn').style.display = 'block';
                 document.getElementById('userInfo').style.display = 'none';
-                document.getElementById('dassForm').style.display = 'none';
+                document.getElementById('pacienteForm').style.display = 'none';
+                document.getElementById('painelSimples').style.display = 'none';
                 document.getElementById('resultados').style.display = 'none';
+                
+                // Se tem psicologo na URL, mostra formulário mesmo sem login? Não, precisa logar.
+                if (psicologoIdFromUrl) {
+                    document.getElementById('loginBtn').textContent = 'Faça login para responder';
+                } else {
+                    document.getElementById('loginBtn').textContent = 'Entrar com Google';
+                }
             }
         });
 
-        // ========== FUNÇÕES DE CÁLCULO ==========
+        // Função para classificar escore
         function classificarEscore(escore, tipo) {
-            const regras = classificacao[tipo];
-            for (let r of regras) {
+            for (let r of classificacao[tipo]) {
                 if (r.min === undefined && escore <= r.max) return r.label;
                 if (r.min !== undefined && r.max !== undefined && escore >= r.min && escore <= r.max) return r.label;
                 if (r.min !== undefined && r.max === undefined && escore >= r.min) return r.label;
@@ -430,17 +489,18 @@
             return 'Não classificado';
         }
 
+        // Função para calcular subescalas
         function calcularSubescalas(respostas) {
             const res = {};
-            for (let escala in subescalas) {
-                res[escala] = {};
-                for (let sub in subescalas[escala]) {
-                    const itens = subescalas[escala][sub];
+            for (let esc in subescalas) {
+                res[esc] = {};
+                for (let sub in subescalas[esc]) {
+                    const itens = subescalas[esc][sub];
                     let bruto = 0;
                     itens.forEach(i => bruto += respostas[i]);
-                    const n = itens.length;
-                    const normalizado = (bruto / (n * 3)) * 10;
-                    res[escala][sub] = {
+                    const nItens = itens.length;
+                    const normalizado = (bruto / (nItens * 3)) * 10;
+                    res[esc][sub] = {
                         bruto: bruto,
                         normalizado: normalizado.toFixed(1)
                     };
@@ -449,24 +509,24 @@
             return res;
         }
 
-        // ========== FUNÇÃO PRINCIPAL ==========
-        function calcularDASS() {
+        // Função principal de cálculo e salvamento
+        async function calcularDASS() {
             // Coletar respostas
             const respostas = [];
             for (let i = 0; i < 42; i++) {
                 const radios = document.getElementsByName(`q${i}`);
-                let selecionado = null;
+                let val = null;
                 for (let r of radios) {
                     if (r.checked) {
-                        selecionado = parseInt(r.value);
+                        val = parseInt(r.value);
                         break;
                     }
                 }
-                if (selecionado === null) {
-                    alert(`Por favor, responda a questão ${i + 1}`);
+                if (val === null) {
+                    alert(`Por favor, responda a questão ${i+1}`);
                     return;
                 }
-                respostas.push(selecionado);
+                respostas.push(val);
             }
 
             // Calcular escores principais
@@ -482,45 +542,14 @@
             // Calcular subescalas
             const subResultados = calcularSubescalas(respostas);
 
-            // ---------- SALVAR NO FIRESTORE (ANÔNIMO) ----------
-            const user = auth.currentUser;
-            if (user) {
-                // Gerar ID anônimo baseado no UID (hash simples)
-                const anonPacienteId = btoa(user.uid).replace(/=/g, ''); // base64 sem padding
-
-                const dadosAnonimos = {
-                    anonPacienteId: anonPacienteId,
-                    data: firebase.firestore.FieldValue.serverTimestamp(),
-                    respostas: respostas,
-                    escores: {
-                        depressao: { bruto: dep, classificacao: classDep },
-                        ansiedade: { bruto: ans, classificacao: classAns },
-                        estresse: { bruto: est, classificacao: classEst }
-                    },
-                    subescalas: subResultados,
-                    escoresNormalizados: {
-                        depressao: (dep / 42) * 10,
-                        ansiedade: (ans / 42) * 10,
-                        estresse: (est / 42) * 10
-                    }
-                };
-
-                db.collection('respostas_anonimas').add(dadosAnonimos)
-                    .then(() => console.log('Dados salvos com sucesso'))
-                    .catch(err => console.error('Erro ao salvar:', err));
-            } else {
-                alert('Você precisa estar logado para salvar os resultados.');
-                return;
-            }
-
-            // ---------- EXIBIR RESULTADOS ----------
+            // Exibir resultados
             let htmlSub = '';
-            for (let escala in subResultados) {
-                const nomeEsc = escala.charAt(0).toUpperCase() + escala.slice(1);
-                htmlSub += `<h3>${nomeEsc}</h3><table><tr><th>Subescala</th><th>Bruto</th><th>Normalizado (0-10)</th></tr>`;
-                for (let sub in subResultados[escala]) {
+            for (let esc in subResultados) {
+                htmlSub += `<h3>${esc.charAt(0).toUpperCase() + esc.slice(1)}</h3>`;
+                htmlSub += '<table><tr><th>Subescala</th><th>Bruto</th><th>Normalizado (0-10)</th></tr>';
+                for (let sub in subResultados[esc]) {
                     const nomeSub = sub.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase());
-                    htmlSub += `<tr><td>${nomeSub}</td><td>${subResultados[escala][sub].bruto}</td><td>${subResultados[escala][sub].normalizado}</td></tr>`;
+                    htmlSub += `<tr><td>${nomeSub}</td><td>${subResultados[esc][sub].bruto}</td><td>${subResultados[esc][sub].normalizado}</td></tr>`;
                 }
                 htmlSub += '</table>';
             }
@@ -534,15 +563,63 @@
                         <div class="card-resultado"><h3>Ansiedade</h3><div class="escore">${ans}</div><div class="classificacao">${classAns}</div></div>
                         <div class="card-resultado"><h3>Estresse</h3><div class="escore">${est}</div><div class="classificacao">${classEst}</div></div>
                     </div>
-                    <h3>Detalhamento por Subescalas</h3>
+                    <h3>Subescalas</h3>
                     ${htmlSub}
-                    <div class="aviso">
-                        <strong>⚠️ Importante:</strong> Esta é uma ferramenta de triagem. Consulte um profissional de saúde mental para uma avaliação completa.
-                    </div>
+                    <div class="aviso">⚠️ Apenas triagem – consulte um profissional.</div>
                 </div>
             `;
-            document.getElementById('resultados').scrollIntoView({ behavior: 'smooth' });
+
+            // ===== SALVAR NO FIRESTORE (dados anônimos) =====
+            const user = auth.currentUser;
+            if (!user) {
+                alert('Erro: usuário não autenticado.');
+                return;
+            }
+
+            // Se não veio da URL com psicologo, não salva (ou salva como paciente genérico)
+            if (!psicologoIdFromUrl) {
+                console.log('Modo de teste: sem psicólogo, não salvando.');
+                return;
+            }
+
+            // Gerar ID anônimo (hash simples do UID)
+            const anonPacienteId = btoa(user.uid).replace(/=/g, ''); // base64 sem padding
+
+            const dadosAnonimos = {
+                anonPacienteId: anonPacienteId,
+                psicologoId: psicologoIdFromUrl,
+                data: firebase.firestore.FieldValue.serverTimestamp(),
+                respostas: respostas,
+                escores: {
+                    depressao: { bruto: dep, classificacao: classDep },
+                    ansiedade: { bruto: ans, classificacao: classAns },
+                    estresse: { bruto: est, classificacao: classEst }
+                },
+                subescalas: subResultados,
+                // Opcional: escores normalizados principais
+                escoresNormalizados: {
+                    depressao: (dep / 42) * 10,
+                    ansiedade: (ans / 42) * 10,
+                    estresse: (est / 42) * 10
+                }
+            };
+
+            try {
+                await db.collection('respostas_anonimas').add(dadosAnonimos);
+                console.log('Dados salvos com sucesso!');
+            } catch (error) {
+                console.error('Erro ao salvar:', error);
+                alert('Erro ao salvar os dados. Verifique o console.');
+            }
         }
+
+        // Inicialização: se houver psicologo na URL, já prepara
+        window.onload = function() {
+            if (psicologoIdFromUrl) {
+                // Se já estiver logado, a auth mudará e mostrará o form
+                // Se não, o botão de login já estará visível
+            }
+        };
     </script>
 </body>
 </html>
